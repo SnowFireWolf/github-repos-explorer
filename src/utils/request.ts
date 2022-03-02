@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 
-export default function() {
-  return axios.create({
-    baseURL: 'http://localhost:3000/api/',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
+
+// github api
+export default axios.create({
+  baseURL: 'https://api.github.com/',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
