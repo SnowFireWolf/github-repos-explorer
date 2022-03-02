@@ -1,3 +1,7 @@
+:root {
+  --primary-color: #0070f3;
+}
+
 html,
 body {
   padding: 0;
