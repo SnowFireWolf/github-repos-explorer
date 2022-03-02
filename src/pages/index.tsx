@@ -7,11 +7,11 @@ import styles from '@/styles/global.module.css'
 
 
 
-
 export default function HomePage() {
   const router = useRouter();
 
-  let [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+
 
   const handleChangeValue = (event: React.FormEvent<HTMLInputElement>) => {
     setSearchValue(event.currentTarget.value);
@@ -22,6 +22,7 @@ export default function HomePage() {
       router.push(`/users/${searchValue}/repos`);
     }
   }
+
 
   return (
     <div className={styles.container}>
