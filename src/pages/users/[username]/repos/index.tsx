@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, ReactEventHandler } from 'react'
 
 import styles from '@/styles/global.module.css'
 
@@ -27,8 +27,16 @@ export default function UserReposListPage({ username }: { username: string }) {
   const [offset, setOffset] = useState(0);
 
 
-  const handleGoToRepoDetail = (repo: IRepo) => {
-    router.push(`/users/${username}/repos/${repo.name}`);
+
+  // 前往連結
+  const handleLinkClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+
+    const href = event.currentTarget.getAttribute('href');
+
+    if (href) {
+      router.push(href);
+    }
   }
 
   const getReposData = async (page: number) => {
@@ -37,15 +45,16 @@ export default function UserReposListPage({ username }: { username: string }) {
       const { data: result } = await request.get(`/users/${username}/repos?per_page=10&page=${page}&sort=stargazers`);
 
       if (result) {
+        // 合併資料
         const newData: Array<IRepo> = [...resultData, ...result];
-        console.log(newData)
-        // 合併
         setResultData(newData);
       }
 
+      // 透過回傳的資料長度來判斷是否為最後一頁
       if (result.length < 10) {
         setIsDataEnd(true);
       } else {
+        // 如果不是的話，繼續加頁數
         setCurrentPage(currentPage + 1);
       }
     } catch (error) {
@@ -60,12 +69,6 @@ export default function UserReposListPage({ username }: { username: string }) {
     getReposData(currentPage);
   }, []);
 
-
-  const isBottom = (element: HTMLDivElement) => {
-    const elementBottom = element.getBoundingClientRect().bottom;
-    return elementBottom - 100 <= window.innerHeight;
-  }
-
   // 處理滾動事件
   useEffect(() => {
     const onScroll = () => setOffset(window.pageYOffset);
@@ -78,16 +81,20 @@ export default function UserReposListPage({ username }: { username: string }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, [username]);
 
+  // 是否在底部
+  const isBottom = (element: HTMLDivElement) => {
+    const elementBottom = element.getBoundingClientRect().bottom;
+    return elementBottom - 100 <= window.innerHeight;
+  }
+
+  // 處理滾動事件
   useEffect(() => {
-    // console.log("onScroll");
-    // console.log("offset", offset);
-    // console.log("isLoading", isLoading);
-    // console.log("currentPage", currentPage);
-    // console.log("isDataEnd", isDataEnd);
     if (mainContainer.current) {
       const inBottom = isBottom(mainContainer.current);
-      // console.log("inBottom", inBottom);
-      // 如果滾到底部與資料未結束，則取得下一頁資料
+      // 這裡的偵測包含
+      // 1. 是否在底部
+      // 2. 是否正在載入中
+      // 3. 是否是最後一頁
       if (!isDataEnd && !isLoading && inBottom) {
         setIsLoading(true);
         getReposData(currentPage);
@@ -95,38 +102,57 @@ export default function UserReposListPage({ username }: { username: string }) {
     }
   }, [offset]);
 
+
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>{username} - Repository list</title>
+        <title>{username} - Repositories</title>
       </Head>
 
       <main className={styles.main} ref={mainContainer}>
         <h1 className={styles.title}>
-          {username} - Repository list
+          {username} - Repositories
         </h1>
 
-        <div className={styles.grid} style={{ marginTop: '2rem' }}>
+        <div className={styles.wrapper}>
           {
             resultData.map((repo: IRepo, index) => {
               return (
-                <div
-                  onClick={() => handleGoToRepoDetail(repo)}
+                <a
+                  onClick={handleLinkClick}
                   className={styles.card}
+                  href={`/users/${username}/repos/${repo.name}`}
                   key={index}
                 >
                   <h2>{repo.name}</h2>
                   <div style={{ minHeight: '30px' }}>{repo.description}</div>
                   <p>{repo.stargazers_count} stars</p>
-                </div>
+                </a>
               )
             })
+          }
+
+          {
+            isDataEnd ? (
+              <div>
+                <h4>已經最底惹</h4>
+              </div>
+            ) : (
+              <div className={styles.card}>
+                <h2 className={styles.skeleton}></h2>
+                <div className={styles.skeleton}></div>
+                <p className={styles.skeleton}></p>
+              </div>
+            )
           }
         </div>
       </main>
     </div>
   )
 }
+
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const username = context.params?.username;
