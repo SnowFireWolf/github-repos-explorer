@@ -116,7 +116,6 @@
 
 .text_field:hover,
 .text_field:active {
-  color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
