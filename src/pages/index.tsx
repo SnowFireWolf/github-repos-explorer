@@ -4,14 +4,15 @@ import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
 import styles from '@/styles/global.module.css'
-
+import Button from '@/components/base/Button'
+import TextField from '@/components/base/Textfield'
 
 
 
 export default function HomePage() {
   const router = useRouter();
 
-  let [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   const handleChangeValue = (event: React.FormEvent<HTMLInputElement>) => {
     setSearchValue(event.currentTarget.value);
@@ -40,7 +41,7 @@ export default function HomePage() {
           在下方欄位輸入要搜尋的使用者名稱
         </p>
 
-        <input
+        <TextField
           onChange={handleChangeValue}
           value={searchValue}
           className={styles.text_field}
@@ -48,9 +49,9 @@ export default function HomePage() {
           placeholder="例如： SnowFireWolf"
         />
 
-        <button onClick={handleSubmit} className={styles.button}>
+        <Button onClick={handleSubmit}>
           搜尋
-        </button>
+        </Button>
       </main>
     </div>
   )

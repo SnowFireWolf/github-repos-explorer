@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import styles from '@/styles/global.module.css'
 
 
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <React.Fragment>
