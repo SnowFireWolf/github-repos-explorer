@@ -4,7 +4,8 @@ import { useRouter } from 'next/router'
 import React, { useState, useEffect, useRef, ReactEventHandler } from 'react'
 
 import styles from '@/styles/global.module.css'
-
+import BaseSkeleton from '@/components/base/Skeleton'
+import BaseCard from '@/components/base/Card'
 import request from '@/utils/request'
 
 
@@ -116,19 +117,24 @@ export default function UserReposListPage({ username }: { username: string }) {
         </h1>
 
         <div className={styles.wrapper}>
+          <BaseSkeleton>
+            <h2></h2>
+            <div></div>
+            <p></p>
+          </BaseSkeleton>
           {
             resultData.map((repo: IRepo, index) => {
               return (
-                <a
+                <BaseCard
+                  as="a"
                   onClick={handleLinkClick}
-                  className={styles.card}
                   href={`/users/${username}/repos/${repo.name}`}
                   key={index}
                 >
                   <h2>{repo.name}</h2>
                   <div style={{ minHeight: '30px' }}>{repo.description}</div>
                   <p>{repo.stargazers_count} stars</p>
-                </a>
+                </BaseCard>
               )
             })
           }
@@ -139,11 +145,11 @@ export default function UserReposListPage({ username }: { username: string }) {
                 <h4>已經最底惹</h4>
               </div>
             ) : (
-              <div className={styles.card}>
-                <h2 className={styles.skeleton}></h2>
-                <div className={styles.skeleton}></div>
-                <p className={styles.skeleton}></p>
-              </div>
+              <BaseSkeleton>
+                <h2></h2>
+                <div></div>
+                <p></p>
+              </BaseSkeleton>
             )
           }
         </div>
