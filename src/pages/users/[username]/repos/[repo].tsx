@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 
 import styles from '@/styles/global.module.css'
-
+import BaseButton from '@/components/base/Button'
 import request from '@/utils/request'
 
 
@@ -65,11 +65,16 @@ export default function UserReposListPage() {
         <h3 className={styles.title}>
           {searchInfo.username}/{searchInfo.repo}
         </h3>
+        { /*<h3>{resultData.full_name}</h3>*/ }
 
         <div>
-          <h3>{resultData.full_name}</h3>
           <h3>{resultData.description}</h3>
-          <h3>{resultData.stargazers_count}</h3>
+          <h3>{resultData.stargazers_count} stars</h3>
+          <BaseButton
+            as="a"
+            href={`https://github.com/${resultData.full_name}`}
+            target="_blank"
+          >前往 Github</BaseButton>
         </div>
       </main>
     </div>

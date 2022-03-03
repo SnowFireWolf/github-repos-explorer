@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef, ReactEventHandler } from 'react'
 import styles from '@/styles/global.module.css'
 import BaseSkeleton from '@/components/base/Skeleton'
 import BaseCard from '@/components/base/Card'
+import Link from '@/components/base/Link'
+import BaseButton from '@/components/base/Button'
 import request from '@/utils/request'
 
 
@@ -22,10 +24,11 @@ export default function UserReposListPage({ username }: { username: string }) {
   const mainContainer = useRef<HTMLDivElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [resultData, setResultData] = useState<Array<IRepo>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDataEnd, setIsDataEnd] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [resultData, setResultData] = useState<Array<IRepo>>([]);
+  const [notFound, setNotFound] = useState(false);
 
 
 
@@ -60,6 +63,8 @@ export default function UserReposListPage({ username }: { username: string }) {
       }
     } catch (error) {
       console.error(error);
+      setNotFound(true);
+      setIsDataEnd(true);
     }
 
     setIsLoading(false);
@@ -117,11 +122,6 @@ export default function UserReposListPage({ username }: { username: string }) {
         </h1>
 
         <div className={styles.wrapper}>
-          <BaseSkeleton>
-            <h2></h2>
-            <div></div>
-            <p></p>
-          </BaseSkeleton>
           {
             resultData.map((repo: IRepo, index) => {
               return (
@@ -140,16 +140,51 @@ export default function UserReposListPage({ username }: { username: string }) {
           }
 
           {
-            isDataEnd ? (
-              <div>
-                <h4>已經最底惹</h4>
-              </div>
-            ) : (
+            // 載入中
+            isLoading && (
               <BaseSkeleton>
                 <h2></h2>
                 <div></div>
                 <p></p>
               </BaseSkeleton>
+            )
+          }
+
+          {
+            // 已經在資料結尾
+            isDataEnd && !notFound && (
+              <div>
+                <h4>已經最底惹</h4>
+              </div>
+            )
+          }
+
+          {
+            // 有使用者，但沒有 Repository
+            resultData.length === 0 && !notFound && (
+              <BaseCard>
+                <h2>沒有找到任何 Repository</h2>
+                <p>
+                  使用者 <strong>{username}</strong> 目前沒有任何 Repository
+                </p>
+                <div style={{ marginTop: "1rem" }}>
+                  <Link href="/">回到首頁</Link>
+                </div>
+              </BaseCard>
+            )
+          }
+          {
+            // 沒有找到使用者
+            notFound && (
+              <BaseCard>
+                <h2>沒有找到這個使用者</h2>
+                <p>
+                  使用者 <strong>{username}</strong> 不存在
+                </p>
+                <div style={{ marginTop: "1rem" }}>
+                  <Link href="/">回到首頁</Link>
+                </div>
+              </BaseCard>
             )
           }
         </div>

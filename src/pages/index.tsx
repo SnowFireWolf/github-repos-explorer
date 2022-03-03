@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import styles from '@/styles/global.module.css'
 import Button from '@/components/base/Button'
 import TextField from '@/components/base/Textfield'
+import Link from '@/components/base/Link'
 
 
 
@@ -21,6 +22,12 @@ export default function HomePage() {
   const handleSubmit = () => {
     if(searchValue) {
       router.push(`/users/${searchValue}/repos`);
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
     }
   }
 
@@ -47,11 +54,18 @@ export default function HomePage() {
           className={styles.text_field}
           type="text"
           placeholder="例如： SnowFireWolf"
+          onKeyDown={handleKeyDown}
         />
 
         <Button onClick={handleSubmit}>
           搜尋
         </Button>
+
+        <div>
+          範例：
+          <Link href="/users/freeCodeCamp/repos/">freeCodeCamp</Link>
+          <Link href="/users/SnowFireWolf/repos/" style={{marginLeft: "1rem"}}>SnowFireWolf</Link>
+        </div>
       </main>
     </div>
   )
