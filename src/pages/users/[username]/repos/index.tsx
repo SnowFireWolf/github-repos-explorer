@@ -7,7 +7,6 @@ import styles from '@/styles/global.module.css'
 import BaseSkeleton from '@/components/base/Skeleton'
 import BaseCard from '@/components/base/Card'
 import Link from '@/components/base/Link'
-import BaseButton from '@/components/base/Button'
 import request from '@/utils/request'
 
 
@@ -117,6 +116,8 @@ export default function UserReposListPage({ username }: { username: string }) {
       </Head>
 
       <main className={styles.main} ref={mainContainer}>
+        <Link href={`/`}>&lt;- 回到首頁</Link>
+
         <h1 className={styles.title}>
           {username} - Repositories
         </h1>
@@ -152,7 +153,7 @@ export default function UserReposListPage({ username }: { username: string }) {
 
           {
             // 有使用者，但沒有 Repository
-            resultData.length === 0 && !notFound && (
+            !isLoading && resultData.length === 0 && !notFound && (
               <BaseCard>
                 <h2>沒有找到任何 Repository</h2>
                 <p>
