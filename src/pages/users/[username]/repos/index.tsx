@@ -151,15 +151,6 @@ export default function UserReposListPage({ username }: { username: string }) {
           }
 
           {
-            // 已經在資料結尾
-            isDataEnd && !notFound && (
-              <div>
-                <h4>已經最底惹</h4>
-              </div>
-            )
-          }
-
-          {
             // 有使用者，但沒有 Repository
             resultData.length === 0 && !notFound && (
               <BaseCard>
@@ -185,6 +176,15 @@ export default function UserReposListPage({ username }: { username: string }) {
                   <Link href="/">回到首頁</Link>
                 </div>
               </BaseCard>
+            )
+          }
+
+          {
+            // 已經在資料結尾
+            isDataEnd && !notFound && (
+              <div>
+                <h4>已經最底惹</h4>
+              </div>
             )
           }
         </div>
