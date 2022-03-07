@@ -6,7 +6,6 @@ import styled from "@emotion/styled";
 const StyledButton = styled.button`
   display: inline-block;
   padding: .75rem 1.75rem;
-  margin: .5rem 1rem;
   border-radius: 12px;
   background-color: var(--primary-color);
   color: #fff;
