@@ -1,34 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+2022 Dcard Frontend Intern Home Work
 
-## Getting Started
+此專案使用 [Next.js](https://nextjs.org/) ，並使用 [swc](https://nextjs.org/docs/advanced-features/compiler)，因此打包與開發速度會很快。
 
-First, run the development server:
+已使用 Vercel 自動部屬 [https://github-repos-explorer-eight.vercel.app](https://github-repos-explorer-eight.vercel.app) 。
 
+
+
+## 入門開始
+
+### git clone 此專案
 ```bash
-npm run dev
-# or
-yarn dev
+git clone https://github.com/SnowFireWolf/github-repos-explorer.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 安裝套件
+```bash
+yarn
+# 或是使用 npm
+npm install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### 開發模式
+```bash
+yarn dev
+# 或是使用 npm
+npm run dev
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+在瀏覽器打開 [http://localhost:3000](http://localhost:3000) ，就可看到網站惹。
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### 也可以使用生產模式，先打包在瀏覽
+```bash
+yarn build
+# 或是使用 npm
+npm run build
+```
+編譯完後使用
+```bash
+yarn start
+# 或是使用 npm
+npm run start
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+在瀏覽器打開 [http://localhost:3000](http://localhost:3000) ，一樣就可以看到。
