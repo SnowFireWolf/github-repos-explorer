@@ -16,7 +16,6 @@ interface IRepo {
 }
 
 interface IPageData {
-  isLoading: boolean,
   resultData: Array<IRepo>,
   currentPage: number,
   isDataEnd: boolean,
@@ -27,10 +26,9 @@ interface IPageData {
 
 
 export default function UserReposListPage({ username }: { username: string }) {
-  console.log("UserReposListPage rendered");
+  // console.log("UserReposListPage rendered");
 
   const [pageData, setPageData] = useState<IPageData>({
-    isLoading: true,
     resultData: [],
     currentPage: 1,
     isDataEnd: false,
@@ -96,6 +94,8 @@ export default function UserReposListPage({ username }: { username: string }) {
     getReposData(pageData.currentPage);
   }, [username]);
 
+
+
   const loadingRef = useRef<HTMLDivElement>(null);
   // const renderCount = useRef(0);
 
@@ -107,9 +107,9 @@ export default function UserReposListPage({ username }: { username: string }) {
 
     const observer = new IntersectionObserver((entries) => {
       // 檢查是否為底部
-      if (entries[0].isIntersecting) {
+      if (entries[0].isIntersecting && !pageData.isDataEnd) {
         console.log("is bottom")
-        // getReposData(pageData.currentPage);
+        getReposData(pageData.currentPage);
       }
     }, observerOptions);
 
@@ -142,17 +142,23 @@ export default function UserReposListPage({ username }: { username: string }) {
             <RepoDetails key={index} repo={repo} username={username} />
           ))}
 
-          {/* 載入中 */}
-          <div ref={loadingRef}></div>
-          <BaseSkeleton>
-            <h2></h2>
-            <div></div>
-            <p></p>
-          </BaseSkeleton>
+          {/* 載入提示 Skeleton */}
+          {
+            !pageData.isDataEnd && (
+              <React.Fragment>
+                <div ref={loadingRef}></div>
+                <BaseSkeleton>
+                  <h2></h2>
+                  <div></div>
+                  <p></p>
+                </BaseSkeleton>
+              </React.Fragment>
+            )
+          }
 
           {
             // 有使用者，但沒有 Repository
-            !pageData.isLoading && pageData.resultData.length === 0 && !pageData.notFound && (
+            pageData.resultData.length === 0 && !pageData.notFound && pageData.isDataEnd && (
               <BaseCard>
                 <h2>沒有找到任何 Repository</h2>
                 <p>
@@ -164,6 +170,7 @@ export default function UserReposListPage({ username }: { username: string }) {
               </BaseCard>
             )
           }
+
           {
             // 沒有找到使用者
             pageData.notFound && !pageData.limitError && (
@@ -239,6 +246,8 @@ const RepoDetails = React.memo<{ repo: IRepo, username: string }>(({ repo, usern
     </React.Fragment>
   );
 });
+
+RepoDetails.displayName = 'RepoDetails';
 
 
 
