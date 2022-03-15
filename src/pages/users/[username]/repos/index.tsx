@@ -108,7 +108,7 @@ export default function UserReposListPage({ username }: { username: string }) {
     const observer = new IntersectionObserver((entries) => {
       // 檢查是否為底部
       if (entries[0].isIntersecting && !pageData.isDataEnd) {
-        console.log("is bottom")
+        // console.log("is bottom");
         getReposData(pageData.currentPage);
       }
     }, observerOptions);
