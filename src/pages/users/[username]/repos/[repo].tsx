@@ -7,6 +7,7 @@ import styled from '@emotion/styled'
 import request from '@/utils/request'
 
 import styles from '@/styles/global.module.css'
+import BaseSkeleton from '@/components/base/Skeleton'
 import BaseButton from '@/components/base/Button'
 import BaseCard from '@/components/base/Card'
 import Link from '@/components/base/Link'
@@ -27,9 +28,11 @@ const RepoButton = styled(BaseButton)`
 
 export default function UserReposListPage({ username, repo }: { username: string, repo: string }) {
   const [resultData, setResultData] = useState<IRepo>({});
+  const [isLoading, setIsLoading] = useState(true);
   const [notFoundRepo, setNotFoundRepo] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     // 確保 username 已經設定
     if (username) {
       (async () => {
@@ -46,6 +49,7 @@ export default function UserReposListPage({ username, repo }: { username: string
         }
       })();
     }
+    setIsLoading(false);
   }, [username, repo]);
 
   return (
@@ -57,30 +61,41 @@ export default function UserReposListPage({ username, repo }: { username: string
       <main className={styles.main}>
         <Link href={`/users/${username}/repos`}>&lt;- 回到 {username} repos</Link>
         { /*<h3>{resultData.full_name}</h3>*/}
-        <BaseCard>
-          {
-            notFoundRepo ? (
-              <div>
-                <h3>Repository not found</h3>
-                <p>
-                  沒有找到這個 Repository
-                </p>
-              </div>
-            ) : (
-              <div>
-                <h3>{username}/{repo}</h3>
-                <p>{resultData.description}</p>
-                <h3>{resultData.stargazers_count} stars</h3>
-                <RepoButton
-                  as="a"
-                  href={`https://github.com/${resultData.full_name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >前往 Github</RepoButton>
-              </div>
-            )
-          }
-        </BaseCard>
+        {
+          // 載入中
+          isLoading ? (
+            <BaseSkeleton>
+              <h2></h2>
+              <div></div>
+              <p></p>
+            </BaseSkeleton>
+          ) : (
+            <BaseCard>
+              {
+                notFoundRepo ? (
+                  <div>
+                    <h3>Repository not found</h3>
+                    <p>
+                      沒有找到這個 Repository
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <h3>{username}/{repo}</h3>
+                    <p>{resultData.description}</p>
+                    <h3>{resultData.stargazers_count} stars</h3>
+                    <RepoButton
+                      as="a"
+                      href={`https://github.com/${resultData.full_name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >前往 Github</RepoButton>
+                  </div>
+                )
+              }
+            </BaseCard>
+          )
+        }
       </main>
     </div>
   )

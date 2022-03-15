@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { useState, useEffect, useRef, ReactEventHandler } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import styles from '@/styles/global.module.css'
 import BaseSkeleton from '@/components/base/Skeleton'
