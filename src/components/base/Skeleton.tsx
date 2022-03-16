@@ -12,6 +12,7 @@ const StyledSkeleton = styled(BaseCard)`
   );
   background-size: 200%;
   animation: loader 1s infinite reverse;
+  transform: rotateZ(360deg);
 
   & h2 {
     width: 50%;
@@ -24,16 +25,6 @@ const StyledSkeleton = styled(BaseCard)`
     margin-top: 1rem;
     width: 30%;
     height: 1rem;
-  }
-
-  /* skeleton animation */
-  @keyframes loader {
-    from {
-      background-position: -100% 0;
-    }
-    to {
-      background-position: 100% 0;
-    }
   }
 `;
 
