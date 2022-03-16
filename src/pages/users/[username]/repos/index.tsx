@@ -26,6 +26,30 @@ interface IPageData {
 
 
 export default function UserReposListPage({ username }: { username: string }) {
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>{username} - Repositories</title>
+      </Head>
+
+      <main className={styles.main}>
+        <Link href={`/`}>&lt;- 回到首頁</Link>
+
+        <h1 className={styles.title}>
+          {username} - Repositories
+        </h1>
+
+        <div className={styles.wrapper}>
+          <RepoList username={username} />
+        </div>
+      </main>
+    </div>
+  )
+}
+
+
+
+const RepoList = ({ username }: { username: string }) => {
   // console.log("UserReposListPage rendered");
 
   const [pageData, setPageData] = useState<IPageData>({
@@ -107,7 +131,7 @@ export default function UserReposListPage({ username }: { username: string }) {
 
     const observer = new IntersectionObserver((entries) => {
       // 檢查是否為底部
-      if (entries[0].isIntersecting && !pageData.isDataEnd) {
+      if (entries[0].isIntersecting && !pageData.isDataEnd && pageData.resultData.length > 0) {
         // console.log("is bottom");
         getReposData(pageData.currentPage);
       }
@@ -122,99 +146,82 @@ export default function UserReposListPage({ username }: { username: string }) {
     }
   });
 
-
-
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>{username} - Repositories</title>
-      </Head>
+    <React.Fragment>
+      {pageData.resultData.map((repo: IRepo, index) => (
+        <RepoDetails key={index} repo={repo} username={username} />
+      ))}
 
-      <main className={styles.main}>
-        <Link href={`/`}>&lt;- 回到首頁</Link>
+      {/* 載入提示 Skeleton */}
+      {
+        !pageData.isDataEnd && (
+          <React.Fragment>
+            <div ref={loadingRef}></div>
+            <BaseSkeleton>
+              <h2></h2>
+              <div></div>
+              <p></p>
+            </BaseSkeleton>
+          </React.Fragment>
+        )
+      }
 
-        <h1 className={styles.title}>
-          {username} - Repositories
-        </h1>
+      {
+        // 有使用者，但沒有 Repository
+        pageData.resultData.length === 0 && !pageData.notFound && pageData.isDataEnd && (
+          <BaseCard>
+            <h2>沒有找到任何 Repository</h2>
+            <p>
+              使用者 <strong>{username}</strong> 目前沒有任何 Repository
+            </p>
+            <div style={{ marginTop: "1rem" }}>
+              <Link href="/">回到首頁</Link>
+            </div>
+          </BaseCard>
+        )
+      }
 
-        <div className={styles.wrapper}>
-          {pageData.resultData.map((repo: IRepo, index) => (
-            <RepoDetails key={index} repo={repo} username={username} />
-          ))}
+      {
+        // 沒有找到使用者
+        pageData.notFound && !pageData.limitError && (
+          <BaseCard>
+            <h2>沒有找到這個使用者</h2>
+            <p>
+              使用者 <strong>{username}</strong> 不存在
+            </p>
+            <div style={{ marginTop: "1rem" }}>
+              <Link href="/">回到首頁</Link>
+            </div>
+          </BaseCard>
+        )
+      }
 
-          {/* 載入提示 Skeleton */}
-          {
-            !pageData.isDataEnd && (
-              <React.Fragment>
-                <div ref={loadingRef}></div>
-                <BaseSkeleton>
-                  <h2></h2>
-                  <div></div>
-                  <p></p>
-                </BaseSkeleton>
-              </React.Fragment>
-            )
-          }
+      {
+        // 超出 github API 請求次數限制
+        pageData.limitError && (
+          <BaseCard>
+            <h2>超出 Github API 請求速率限制</h2>
+            <p>
+              滾動ㄉ太快惹，先休息一下，晚點再試試
+            </p>
+            <div style={{ marginTop: "1rem" }}>
+              <Link href="/">回到首頁</Link>
+            </div>
+          </BaseCard>
+        )
+      }
 
-          {
-            // 有使用者，但沒有 Repository
-            pageData.resultData.length === 0 && !pageData.notFound && pageData.isDataEnd && (
-              <BaseCard>
-                <h2>沒有找到任何 Repository</h2>
-                <p>
-                  使用者 <strong>{username}</strong> 目前沒有任何 Repository
-                </p>
-                <div style={{ marginTop: "1rem" }}>
-                  <Link href="/">回到首頁</Link>
-                </div>
-              </BaseCard>
-            )
-          }
-
-          {
-            // 沒有找到使用者
-            pageData.notFound && !pageData.limitError && (
-              <BaseCard>
-                <h2>沒有找到這個使用者</h2>
-                <p>
-                  使用者 <strong>{username}</strong> 不存在
-                </p>
-                <div style={{ marginTop: "1rem" }}>
-                  <Link href="/">回到首頁</Link>
-                </div>
-              </BaseCard>
-            )
-          }
-
-          {
-            // 超出 github API 請求次數限制
-            pageData.limitError && (
-              <BaseCard>
-                <h2>超出 Github API 請求速率限制</h2>
-                <p>
-                  滾動ㄉ太快惹，先休息一下，晚點再試試
-                </p>
-                <div style={{ marginTop: "1rem" }}>
-                  <Link href="/">回到首頁</Link>
-                </div>
-              </BaseCard>
-            )
-          }
-
-          {
-            // 已經在資料結尾
-            pageData.isDataEnd && !pageData.notFound && (
-              <div>
-                <h4>已經最底惹</h4>
-              </div>
-            )
-          }
-        </div>
-      </main>
-    </div>
-  )
-}
-
+      {
+        // 已經在資料結尾
+        pageData.isDataEnd && !pageData.notFound && (
+          <div>
+            <h4>已經最底惹</h4>
+          </div>
+        )
+      }
+    </React.Fragment>
+  );
+};
 
 
 

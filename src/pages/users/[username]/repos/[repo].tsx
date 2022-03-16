@@ -18,6 +18,12 @@ interface IRepo {
   [key: string]: string | number
 }
 
+interface IPageData {
+  resultData: IRepo,
+  isLoading: boolean,
+  notFoundRepo: boolean,
+}
+
 
 
 const RepoButton = styled(BaseButton)`
@@ -26,31 +32,38 @@ const RepoButton = styled(BaseButton)`
 
 
 
-export default function UserReposListPage({ username, repo }: { username: string, repo: string }) {
-  const [resultData, setResultData] = useState<IRepo>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFoundRepo, setNotFoundRepo] = useState(false);
+export default function UserRepoDetailPage({ username, repo }: { username: string, repo: string }) {
+  const [pageData, setPageData] = useState<IPageData>({
+    resultData: {},
+    isLoading: true,
+    notFoundRepo: false,
+  });
 
   useEffect(() => {
-    setIsLoading(true);
     // 確保 username 已經設定
     if (username) {
       (async () => {
+        let resultData = pageData.resultData;
+        let notFoundRepo = pageData.notFoundRepo;
+
         try {
           // get user repos
           const { data: result } = await request.get(`/repos/${username}/${repo}`);
-          // set state
-          setResultData(result);
-
-          setNotFoundRepo(false);
+          resultData = result;
         } catch (error) {
           console.error(error);
-          setNotFoundRepo(true);
+          notFoundRepo = true;
         }
+
+        // set state
+        setPageData({
+          resultData,
+          isLoading: false,
+          notFoundRepo,
+        });
       })();
     }
-    setIsLoading(false);
-  }, [username, repo]);
+  }, [username]);
 
   return (
     <div className={styles.container}>
@@ -61,9 +74,10 @@ export default function UserReposListPage({ username, repo }: { username: string
       <main className={styles.main}>
         <Link href={`/users/${username}/repos`}>&lt;- 回到 {username} repos</Link>
         { /*<h3>{resultData.full_name}</h3>*/}
+
         {
           // 載入中
-          isLoading ? (
+          pageData.isLoading ? (
             <BaseSkeleton>
               <h2></h2>
               <div></div>
@@ -72,7 +86,7 @@ export default function UserReposListPage({ username, repo }: { username: string
           ) : (
             <BaseCard>
               {
-                notFoundRepo ? (
+                pageData.notFoundRepo ? (
                   <div>
                     <h3>Repository not found</h3>
                     <p>
@@ -82,11 +96,11 @@ export default function UserReposListPage({ username, repo }: { username: string
                 ) : (
                   <div>
                     <h3>{username}/{repo}</h3>
-                    <p>{resultData.description}</p>
-                    <h3>{resultData.stargazers_count} stars</h3>
+                    <p>{pageData.resultData.description}</p>
+                    <h3>{pageData.resultData.stargazers_count} stars</h3>
                     <RepoButton
                       as="a"
-                      href={`https://github.com/${resultData.full_name}`}
+                      href={`https://github.com/${pageData.resultData.full_name}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >前往 Github</RepoButton>
