@@ -12,15 +12,15 @@ import request from '@/utils/request'
 
 
 interface IRepo {
-  [key: string]: string | number;
+  [key: string]: string | number
 }
 
 interface IPageData {
-  resultData: Array<IRepo>;
-  currentPage: number;
-  isDataEnd: boolean;
-  notFound: boolean;
-  limitError: boolean;
+  resultData: Array<IRepo>,
+  currentPage: number,
+  isDataEnd: boolean,
+  notFound: boolean,
+  limitError: boolean,
 }
 
 
@@ -50,6 +50,9 @@ export default function UserReposListPage({ username }: { username: string }) {
 
 
 const RepoList = ({ username }: { username: string }) => {
+  // console.log("UserReposListPage rendered");
+
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [pageData, setPageData] = useState<IPageData>({
     resultData: [],
     currentPage: 1,
@@ -61,13 +64,16 @@ const RepoList = ({ username }: { username: string }) => {
 
 
   const getReposData = async (page: number) => {
-    let {
-      resultData,
-      currentPage,
-      isDataEnd,
-      notFound,
-      limitError,
-    } = pageData;
+    // repos 資料
+    let resultData = pageData.resultData;
+    // github 請求頁數
+    let currentPage = pageData.currentPage;
+    // repos 結尾
+    let isDataEnd = pageData.isDataEnd;
+    // github api 限制警告
+    let limitError = pageData.limitError;
+    // 是否有任何 repos
+    let notFound = pageData.notFound;
 
     try {
       // get user repos
@@ -99,6 +105,7 @@ const RepoList = ({ username }: { username: string }) => {
     }
 
     setPageData({
+      ...pageData,
       resultData,
       currentPage,
       limitError,
@@ -112,7 +119,25 @@ const RepoList = ({ username }: { username: string }) => {
     getReposData(pageData.currentPage);
   }, [username]);
 
+  useEffect(() => {
+    const observerOptions = { root: null, rootMargin: '100px', threshold: 0 };
 
+    const observer = new IntersectionObserver((entries) => {
+      // 檢查是否為底部
+      if (entries[0].isIntersecting && !pageData.isDataEnd && pageData.resultData.length > 0) {
+        // console.log("is bottom");
+        getReposData(pageData.currentPage);
+      }
+    }, observerOptions);
+
+    if (bottomRef.current) {
+      observer.observe(bottomRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    }
+  });
 
   return (
     <React.Fragment>
@@ -120,18 +145,17 @@ const RepoList = ({ username }: { username: string }) => {
         <RepoDetails key={index} repo={repo} username={username} />
       ))}
 
+      {/* 載入提示 Skeleton */}
       {
-        // 載入提示 Skeleton
         !pageData.isDataEnd && (
-          <SkeletonLoader
-            isBottom={async () => {
-              // 檢查不等於第一頁
-              if (pageData.resultData.length > 0) {
-                // console.log("is bottom");
-                await getReposData(pageData.currentPage);
-              }
-            }}
-          />
+          <React.Fragment>
+            <div ref={bottomRef}></div>
+            <BaseSkeleton>
+              <h2></h2>
+              <div></div>
+              <p></p>
+            </BaseSkeleton>
+          </React.Fragment>
         )
       }
 
@@ -225,52 +249,6 @@ const RepoDetails = React.memo<{ repo: IRepo, username: string }>(({ repo, usern
 
 RepoDetails.displayName = 'RepoDetails';
 
-
-
-const SkeletonLoader = ({ isBottom }: { isBottom: Function }) => {
-  const skeletonRef = useRef<HTMLDivElement>(null);
-  const [showSkeleton, setShowSkeleton] = useState(false);
-
-  useEffect(() => {
-    const observerOptions = { root: null, rootMargin: '100px', threshold: 0 };
-
-    const observer = new IntersectionObserver(async (entries) => {
-      // 檢查是否為底部
-      if (entries[0].isIntersecting && !showSkeleton) {
-        // console.log("is bottom");
-        // 顯示 skeleton
-        setShowSkeleton(true);
-        // call 取得下一頁資料
-        await isBottom();
-        // 隱藏 skeleton
-        setShowSkeleton(false);
-      }
-    }, observerOptions);
-
-    if (skeletonRef.current) {
-      observer.observe(skeletonRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    }
-  });
-
-  return (
-    <React.Fragment>
-      <div ref={skeletonRef}></div>
-      {
-        showSkeleton && (
-          <BaseSkeleton>
-            <h2></h2>
-            <div></div>
-            <p></p>
-          </BaseSkeleton>
-        )
-      }
-    </React.Fragment>
-  );
-}
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
