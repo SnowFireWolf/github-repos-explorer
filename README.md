@@ -1,6 +1,6 @@
 2022 Dcard Frontend Intern Home Work
 
-此專案使用 [Next.js](https://nextjs.org/) ，並使用 [swc](https://nextjs.org/docs/advanced-features/compiler)，因此打包與開發速度會很快。
+此專案使用 [Next.js](https://nextjs.org/) ，並使用 [swc](https://nextjs.org/docs/advanced-features/compiler)，因此打包與開發的編譯速度會很快。
 
 已使用 Vercel 自動部屬 [https://github-repos-explorer-eight.vercel.app](https://github-repos-explorer-eight.vercel.app) 。
 
