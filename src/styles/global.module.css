@@ -20,7 +20,6 @@
 
 .footer {
   display: flex;
-  flex: 1;
   padding: 2rem 0;
   border-top: 1px solid #eaeaea;
   justify-content: center;
@@ -28,10 +27,13 @@
 }
 
 .footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+  margin-right: .3rem;
+  color: #532d9e;
+}
+
+.footer a:hover {
+  color: #713ed8;
+  text-decoration: underline;
 }
 
 .wrapper {
