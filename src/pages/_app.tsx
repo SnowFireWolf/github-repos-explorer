@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
 
       <footer className={styles.footer}>
-        Kevin Zheng 2022
+        <a href="https://snowfirewolf.github.io/" target="_blank" rel="noopener noreferrer">Kevin Zheng</a> 2022
       </footer>
     </React.Fragment>
   )
