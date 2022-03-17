@@ -25,14 +25,26 @@ const StyledCard = styled.div`
   }
 
   h2 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 .7rem 0;
     font-size: 1.5rem;
   }
 
   p {
     margin: 0;
+    min-height: 30px;
+    font-size: 1rem;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  .star {
+    margin-top: .7rem;
     font-size: 1.25rem;
     line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 `;
 
