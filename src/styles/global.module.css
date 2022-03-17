@@ -2,6 +2,12 @@
   padding: 0 2rem;
 }
 
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+}
+
 .main {
   min-height: 100vh;
   padding: 4rem 0;
@@ -39,8 +45,15 @@
 
 .title {
   margin: 0;
+  margin-top: 1rem;
   line-height: 1.15;
   font-size: 3rem;
+}
+
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
 }
 
 .title,

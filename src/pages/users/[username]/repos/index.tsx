@@ -21,6 +21,7 @@ interface IPageData {
   isDataEnd: boolean,
   notFound: boolean,
   limitError: boolean,
+  networkError: boolean,
 }
 
 
@@ -50,8 +51,7 @@ export default function UserReposListPage({ username }: { username: string }) {
 
 
 const RepoList = ({ username }: { username: string }) => {
-  // console.log("UserReposListPage rendered");
-
+  const router = useRouter();
   const bottomRef = useRef<HTMLDivElement>(null);
   const [pageData, setPageData] = useState<IPageData>({
     resultData: [],
@@ -59,21 +59,26 @@ const RepoList = ({ username }: { username: string }) => {
     isDataEnd: false,
     notFound: false,
     limitError: false,
+    networkError: false,
   });
 
 
 
   const getReposData = async (page: number) => {
-    // repos 資料
-    let resultData = pageData.resultData;
-    // github 請求頁數
-    let currentPage = pageData.currentPage;
-    // repos 結尾
-    let isDataEnd = pageData.isDataEnd;
-    // github api 限制警告
-    let limitError = pageData.limitError;
-    // 是否有任何 repos
-    let notFound = pageData.notFound;
+    let {
+      // repos 資料
+      resultData,
+      // github API 請求頁數
+      currentPage,
+      // repos 結尾
+      isDataEnd,
+      // 是否有任何 repos
+      notFound,
+      // github api 限制警告
+      limitError,
+      // 網路錯誤
+      networkError,
+    } = pageData;
 
     try {
       // get user repos
@@ -90,17 +95,26 @@ const RepoList = ({ username }: { username: string }) => {
       } else {
         // 如果不是的話，繼續加頁數
         currentPage = page + 1;
+        isDataEnd = false;
       }
-    } catch (error: any) {
-      const { status } = error.response;
 
-      if (status === 404) {
-        notFound = true;
-      } else if (status === 403) {
-        // 超出 github API 請求次數限制
-        limitError = true;
+      networkError = false;
+    } catch (error: any) {
+      const response = error.response;
+
+      if (response !== undefined) {
+        const { status } = response;
+
+        if (status === 404) {
+          notFound = true;
+        } else if (status === 403) {
+          // 超出 github API 請求次數限制
+          limitError = true;
+        }
+      } else {
+        networkError = true;
       }
-      // setNotFound(true);
+
       isDataEnd = true;
     }
 
@@ -110,7 +124,8 @@ const RepoList = ({ username }: { username: string }) => {
       currentPage,
       limitError,
       isDataEnd,
-      notFound
+      notFound,
+      networkError
     })
   }
 
@@ -120,7 +135,7 @@ const RepoList = ({ username }: { username: string }) => {
   }, [username]);
 
   useEffect(() => {
-    const observerOptions = { root: null, rootMargin: '100px', threshold: 0 };
+    const observerOptions = { root: null, rootMargin: '500px', threshold: 0 };
 
     const observer = new IntersectionObserver((entries) => {
       // 檢查是否為底部
@@ -147,7 +162,7 @@ const RepoList = ({ username }: { username: string }) => {
 
       {/* 載入提示 Skeleton */}
       {
-        !pageData.isDataEnd && (
+        !pageData.isDataEnd && !pageData.networkError && (
           <React.Fragment>
             <div ref={bottomRef}></div>
             <BaseSkeleton>
@@ -205,6 +220,21 @@ const RepoList = ({ username }: { username: string }) => {
       }
 
       {
+        // 網路連線段開
+        pageData.networkError && (
+          <BaseCard>
+            <h2>您的網際網路連線可能已斷開</h2>
+            <p>
+              請檢查您的網路連線，並稍後重新整理頁面
+            </p>
+            <div style={{ marginTop: "1rem" }}>
+              <Link onClick={() => router.reload()}>重新整理</Link>
+            </div>
+          </BaseCard>
+        )
+      }
+
+      {
         // 已經在資料結尾
         pageData.isDataEnd && !pageData.notFound && (
           <div>
@@ -240,8 +270,8 @@ const RepoDetails = React.memo<{ repo: IRepo, username: string }>(({ repo, usern
         href={`/users/${username}/repos/${repo.name}`}
       >
         <h2>{repo.name}</h2>
-        <div style={{ minHeight: '30px' }}>{repo.description}</div>
-        <p>{repo.stargazers_count} stars</p>
+        <p>{repo.description ? repo.description : "沒有描述"}</p>
+        <div className="star">{repo.stargazers_count} stars</div>
       </BaseCard>
     </React.Fragment>
   );

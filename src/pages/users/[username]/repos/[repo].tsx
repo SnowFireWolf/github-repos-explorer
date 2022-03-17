@@ -88,16 +88,16 @@ export default function UserRepoDetailPage({ username, repo }: { username: strin
               {
                 pageData.notFoundRepo ? (
                   <div>
-                    <h3>Repository not found</h3>
+                    <h2>Repository not found</h2>
                     <p>
                       沒有找到這個 Repository
                     </p>
                   </div>
                 ) : (
                   <div>
-                    <h3>{username}/{repo}</h3>
-                    <p>{pageData.resultData.description}</p>
-                    <h3>{pageData.resultData.stargazers_count} stars</h3>
+                    <h2>{username}/{repo}</h2>
+                    <p>{pageData.resultData.description ? pageData.resultData.description : "沒有描述"}</p>
+                    <div className="star">{pageData.resultData.stargazers_count} stars</div>
                     <RepoButton
                       as="a"
                       href={`https://github.com/${pageData.resultData.full_name}`}
